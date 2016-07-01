@@ -5,9 +5,8 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.util.jar.JarOutputStream;
+import java.util.zip.*;
 
 /**
  * Created by Roy on 16-4-27.
@@ -23,16 +22,28 @@ public class ZipUtils {
             }
         }else{
             ZipEntry entry=new ZipEntry(dir+f.getName());
+            byte[]bs=FileUtils.readFileToByteArray(f);
+            CRC32 crc=new CRC32();
+            crc.update(bs);
+            entry.setSize(bs.length);
+            entry.setCrc(crc.getValue());
+            System.out.println(entry.getName());
             out.putNextEntry(entry);
-            out.write(FileUtils.readFileToByteArray(f));
+            out.write(bs);
+
         }
     }
 
     public static void zip(File in,File out) throws IOException {
-        try(ZipOutputStream ouf=new ZipOutputStream(new FileOutputStream(out), Charset.forName("UTF-8"))){;
+
+        try(ZipOutputStream ouf=new ZipOutputStream(new FileOutputStream(out),Charset.forName("UTF-8"))){
+            ouf.setLevel(Deflater.NO_COMPRESSION);
+            ouf.setMethod(ZipOutputStream.STORED);
             if (in.isDirectory()){
                 File[] fs=in.listFiles();
                 if (fs!=null) for (File e:fs) zip(ouf, "", e);
+            }else{
+                zip(ouf,"",in);
             }
         }
     }

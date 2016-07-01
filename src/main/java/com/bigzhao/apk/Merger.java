@@ -27,6 +27,8 @@ public class Merger {
     }
 
     public void merge(File unuse, File apk) throws Exception {
+        System.out.println(ws);
+        System.out.println(apk);
         FileUtils.deleteQuietly(ws);
         FileUtils.forceMkdir(ws);
         File loaderDir=new File(ws,"loader");
@@ -40,10 +42,19 @@ public class Merger {
         FileUtils.writeByteArrayToFile(manifest, bs);
 
         File dex=new File(loaderDir,"classes.dex");
-        File dex2=new File("E:\\AndroidWS\\JianRMagicBox\\app\\build\\outputs\\apk\\classes.dex");
-        mergeDex(dex,dex2,dex);
+        File dex2=new File("E:\\AndroidWS\\JianRMagicBox\\app\\build\\outputs\\apk\\e\\classes.dex");
 
-        ZipUtils.zip(loaderDir,new File(ws,apk.getName()));
+        File moduleDir=new File(loaderDir,"assets\\MagicBox\\module");
+
+        FileUtils.copyDirectory(
+                new File("E:\\IntellijWS\\DynamicApkLoaderBuilder\\src\\main\\assets"),
+                new File(loaderDir, "assets"));
+        FileUtils.copyFile(new File("E:\\Projects\\Project1\\Project1\\libs\\armeabi\\libMagicBox.so"),
+                new File(moduleDir, "libMagicBox.so"));
+
+        mergeDex(dex, dex2, dex, new File(moduleDir, "classes.dex"));
+        //ZipUtils.zip(new File(moduleDir, "classes.dex"), new File(moduleDir, "classes.jar"));
+        ZipUtils.zip(loaderDir, new File(ws, apk.getName()));
     }
 
     public void bakSmali(File dex,File output) throws IOException {
@@ -54,43 +65,58 @@ public class Merger {
         org.jf.smali.main.main(new String[]{"-o",dex.getAbsolutePath(),input.getAbsolutePath()});
     }
 
-    public void mergeDex(File dex1,File dex2,File outputDex) throws IOException {
+    public void mergeDex(File dex1,File dex2,File outputDex,File moduleDex) throws IOException {
         File smali=new File(ws,"smali");
         bakSmali(dex1, smali);
         File cocos2dxActivity=new File(smali,"org\\cocos2dx\\lib\\Cocos2dxActivity.smali");
         String code=FileUtils.readFileToString(cocos2dxActivity,"UTF-8");
         code=code.replace("invoke-static {v3}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V",
                 "invoke-static {v3}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V\n" +
-                "invoke-static {}, Lcom/bigzhao/jianrmagicbox/FadeCode;->loadNative()V");
-        FileUtils.writeStringToFile(cocos2dxActivity,code);
+                "invoke-static {}, Lcom/bigzhao/jianrmagicbox/FakeCode;->loadNative()V");
+        FileUtils.writeStringToFile(cocos2dxActivity, code);
         bakSmali(dex2, smali);
         if (outputDex.exists()) FileUtils.deleteQuietly(outputDex);
-        smali(smali,outputDex);
+        File moduleSmali=new File(smali,"../moduleSmali");
+        FileUtils.moveDirectory(new File(smali,"com/bigzhao/jianrmagicbox/module"),new File(moduleSmali,"com/bigzhao/jianrmagicbox/module"));
+        smali(moduleSmali,moduleDex);
+        //FileUtils.copyFile(new File("E:\\IntellijWS\\DynamicApkLoaderBuilder\\tools\\classes.dex"),moduleDex);
+        smali(smali, outputDex);
     }
 
     private String processManifest(String xml) {
         xml=xml.replaceAll("package=\"[\\w\\.]+\"","package=\"com.bigzhao.jianrmagicbox\"");
         xml=xml.replaceAll("<intent-filter[\\s\\S]*?android.intent.category.LAUNCHER[\\s\\S]*?</intent-filter>","");
-        xml=xml.replaceAll("(?=\\s*</application>)","<activity\n" +
-                "\t\t\tandroid:theme=\"@android:01030007\"\n" +
-                "\t\t\tandroid:name=\"com.bigzhao.jianrmagicbox.LoaderActivity\"\n" +
-                "\t\t\tandroid:screenOrientation=\"6\"\n" +
-                "\t\t\tandroid:configChanges=\"0x000004A0\"\n" +
-                "\t\t\t>\n" +
-                "\t\t\t android:exported=\"true\"\n" +
-                "\n" +
-                "\t\t\t<intent-filter\n" +
-                "\t\t\t\t>\n" +
-                "\t\t\t\t<action\n" +
-                "\t\t\t\t\tandroid:name=\"android.intent.action.MAIN\"\n" +
-                "\t\t\t\t\t>\n" +
-                "\t\t\t\t</action>\n" +
-                "\t\t\t\t<category\n" +
-                "\t\t\t\t\tandroid:name=\"android.intent.category.LAUNCHER\"\n" +
-                "\t\t\t\t\t>\n" +
-                "\t\t\t\t</category>\n" +
-                "\t\t\t</intent-filter>\n" +
-                "\t\t</activity>");
+        xml=xml.replaceAll("(?=\\s*</application>)",
+                "<activity android:theme=\"@android:01030007\"\n" +
+                "android:label=\"战舰少女R·改\"\n" +
+                "android:name=\"com.bigzhao.jianrmagicbox.LoaderActivity\"\n" +
+                "			android:screenOrientation=\"6\"\n" +
+                "			android:configChanges=\"0x000004A0\"\n" +
+                "			>\n" +
+                "			 android:exported=\"true\"\n" +
+                "			<intent-filter\n" +
+                "				>\n" +
+                "				<action\n" +
+                "					android:name=\"android.intent.action.MAIN\"\n" +
+                "					>\n" +
+                "				</action>\n" +
+                "				<category\n" +
+                "					android:name=\"android.intent.category.LAUNCHER\"\n" +
+                "					>\n" +
+                "				</category>\n" +
+                "			</intent-filter>\n" +
+                "		</activity>" +
+                "<service android:name=\"com.bigzhao.jianrmagicbox.MagicBoxService\">\n" +
+                "            <intent-filter>\n" +
+                "                <action android:name=\"com.bigzhao.jianrmagicbox.action.SERVICE\"/>\n" +
+                "            </intent-filter>\n" +
+                "        </service>\n" +
+                "        <receiver android:name=\".MagicBoxReciever\">\n" +
+                "            <intent-filter>\n" +
+                "                <action android:name=\"com.bigzhao.jianrmagicbox.action.RECEIVER\"/>\n" +
+                "            </intent-filter>\n" +
+                "        </receiver>" +
+                        "");
         return xml;
     }
 

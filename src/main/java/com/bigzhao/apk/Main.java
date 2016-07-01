@@ -13,6 +13,5 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Merger merger=new Merger(args.length>=3?new File(args[2]): SystemUtils.getUserDir());
         merger.merge(new File(args[0]), new File(args[1]));
-
     }
 }
