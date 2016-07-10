@@ -86,6 +86,7 @@ public class Merger {
     private String processManifest(String xml) {
         xml=xml.replaceAll("package=\"[\\w\\.]+\"","package=\"com.bigzhao.jianrmagicbox\"");
         xml=xml.replaceAll("<intent-filter[\\s\\S]*?android.intent.category.LAUNCHER[\\s\\S]*?</intent-filter>","");
+        //xml=xml.replaceAll("<application","$0 android:debuggable=\"true\"");
         xml=xml.replaceAll("(?=\\s*</application>)",
                 "<activity android:theme=\"@android:01030007\"\n" +
                 "android:label=\"战舰少女R·改\"\n" +

@@ -3,7 +3,6 @@ cd /d %d%
 set zipalign=D:\Android\sdk\build-tools\23.0.3\zipalign
 set z="D:\Program Files\7-Zip\7z"
 call mvn clean package
-::E:/IntellijWS/DynamicApkLoaderBuilder/
 set src=%1
 set ws=%d%data
 pushd E:\Projects\Project1\Project1
@@ -26,3 +25,5 @@ del %d%data\module.zip
 pushd %d%data\loader\assets\MagicBox\module\
 call %z% a %d%data\module.zip *
 popd
+
+adb shell am start -D com.bigzhao.jianrmagicbox/com.bigzhao.jianrmagicbox.LoaderActivity
