@@ -1,0 +1,14 @@
+{
+  "deploy": [
+    {
+      "action":"copyModule",
+      "from":"MagicBox/module/libMagicBox.so",
+      "to":"libMagicBox.so"
+    },
+    {
+      "action":"copyModule",
+      "from":"MagicBox/module/classes.dex",
+      "to":"classes.dex"
+    }
+  ]
+}

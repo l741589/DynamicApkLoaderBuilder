@@ -86,7 +86,19 @@ public class Merger {
     private String processManifest(String xml) {
         xml=xml.replaceAll("package=\"[\\w\\.]+\"","package=\"com.bigzhao.jianrmagicbox\"");
         xml=xml.replaceAll("<intent-filter[\\s\\S]*?android.intent.category.LAUNCHER[\\s\\S]*?</intent-filter>","");
-        //xml=xml.replaceAll("<application","$0 android:debuggable=\"true\"");
+        xml=xml.replaceAll("android:allowBackup",
+                "android:name=\"com.bigzhao.jianrmagicbox.App\"\n" +
+                //"android:debuggable=\"true\"\n" +
+                "$0");
+        xml=xml.replaceAll("<uses-permission[\\s\\S]*</uses-permission>","<uses-permission android:name=\"android.permission.INTERNET\"/>\n" +
+                "    <uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>\n" +
+                "    <uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>\n" +
+                "    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>\n" +
+                "    <uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>\n" +
+                "    <uses-permission android:name=\"android.permission.WAKE_LOCK\"/>" +
+                "    <uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>" +
+                "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>" +
+                "    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>");
         xml=xml.replaceAll("(?=\\s*</application>)",
                 "<activity android:theme=\"@android:01030007\"\n" +
                 "android:label=\"战舰少女R·改\"\n" +
@@ -112,7 +124,7 @@ public class Merger {
                 "                <action android:name=\"com.bigzhao.jianrmagicbox.action.SERVICE\"/>\n" +
                 "            </intent-filter>\n" +
                 "        </service>\n" +
-                "        <receiver android:name=\".MagicBoxReciever\">\n" +
+                "        <receiver android:name=\"com.bigzhao.jianrmagicbox.MagicBoxReciever\">\n" +
                 "            <intent-filter>\n" +
                 "                <action android:name=\"com.bigzhao.jianrmagicbox.action.RECEIVER\"/>\n" +
                 "            </intent-filter>\n" +
