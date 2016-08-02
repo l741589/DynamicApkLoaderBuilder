@@ -46,9 +46,11 @@ public class Merger {
 
         File moduleDir=new File(loaderDir,"assets\\MagicBox\\module");
 
-        FileUtils.copyDirectory(
-                new File("E:\\IntellijWS\\DynamicApkLoaderBuilder\\src\\main\\assets"),
-                new File(loaderDir, "assets"));
+        for (int i=0;i<1;++i) {
+            FileUtils.copyDirectory(
+                    new File("E:\\IntellijWS\\DynamicApkLoaderBuilder\\src\\main\\assets\\" + i),
+                    new File(loaderDir, "assets"));
+        }
         FileUtils.copyFile(new File("E:\\Projects\\Project1\\Project1\\libs\\armeabi\\libMagicBox.so"),
                 new File(moduleDir, "libMagicBox.so"));
 
@@ -88,7 +90,7 @@ public class Merger {
         xml=xml.replaceAll("<intent-filter[\\s\\S]*?android.intent.category.LAUNCHER[\\s\\S]*?</intent-filter>","");
         xml=xml.replaceAll("android:allowBackup",
                 "android:name=\"com.bigzhao.jianrmagicbox.App\"\n" +
-                //"android:debuggable=\"true\"\n" +
+                "android:debuggable=\"true\"\n" +
                 "$0");
         xml=xml.replaceAll("<uses-permission[\\s\\S]*</uses-permission>","<uses-permission android:name=\"android.permission.INTERNET\"/>\n" +
                 "    <uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>\n" +

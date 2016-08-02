@@ -9,6 +9,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/assets" />
+      <excludeFolder url="file://$MODULE_DIR$/src/main/assets2" />
+      <excludeFolder url="file://$MODULE_DIR$/src/main/assets3" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/tools" />
     </content>

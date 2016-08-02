@@ -4,3 +4,6 @@ target/
 *.so
 *.a
 tools/CV/
+*.mp3
+src/main/assets/2/res/audio/
+src/main/assets/1/
